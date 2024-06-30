@@ -1,25 +1,12 @@
 import fastify from 'fastify'
+import cookie from '@fastify/cookie'
+
 import { env } from './env'
 import { transactionsRoutes } from './routes/transactions'
-import fastifyCookie from '@fastify/cookie'
-import crypto from 'crypto'
 
 const app = fastify()
 
-app.register(fastifyCookie, {
-  secret: 'your-secret-key',
-})
-
-app.addHook('preHandler', (request, reply, done) => {
-  if (!request.cookies.sessionId) {
-    const sessionId = crypto.randomUUID()
-    reply.setCookie('sessionId', sessionId, {
-      path: '/',
-      httpOnly: true,
-    })
-  }
-  done()
-})
+app.register(cookie)
 
 app.register(transactionsRoutes, {
   prefix: 'transactions',
