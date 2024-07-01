@@ -26,7 +26,7 @@ export async function transactionsRoutes(app: FastifyInstance) {
     {
       preHandler: [checkSessionIdExists],
     },
-    async (request, reply) => {
+    async (request) => {
       const getTransactionParamsSchema = z.object({
         id: z.string().uuid(),
       })
@@ -37,16 +37,12 @@ export async function transactionsRoutes(app: FastifyInstance) {
 
       const transaction = await knex('transactions')
         .where({
-          id,
           session_id: sessionId,
+          id,
         })
         .first()
 
-      if (!transaction) {
-        return reply.status(404).send({ error: 'Transaction not found' })
-      }
-
-      return transaction
+      return { transaction }
     },
   )
 
